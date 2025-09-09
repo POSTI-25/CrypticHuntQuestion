@@ -53,7 +53,7 @@ def insert_sample_row():
         INSERT INTO points (x_coordinate, y_coordinate, flag)
         VALUES (?, ?, ?);
         '''
-        cursor.execute(insert_query, (-153, -50, 020706))  # Example values
+        cursor.execute(insert_query, (-153, -50, 180725))  # Example values
         conn.commit()
         print("Sample row inserted successfully.")
 
@@ -67,3 +67,4 @@ def insert_sample_row():
 
 if __name__ == '__main__':
     create_database_and_table()
+    insert_sample_row()
