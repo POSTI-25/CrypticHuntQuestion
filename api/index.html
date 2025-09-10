@@ -53,68 +53,64 @@
         <div id="responseMessage" class="mt-6 text-center text-sm p-4 rounded-lg hidden"></div>
     </div>
 
-    <script>
-        const retrievalForm = document.getElementById('retrievalForm');
-        const responseMessage = document.getElementById('responseMessage');
-        const submitButton = document.getElementById('submitButton');
+   <script>
+    const retrievalForm = document.getElementById('retrievalForm');
+    const responseMessage = document.getElementById('responseMessage');
+    const submitButton = document.getElementById('submitButton');
 
-        retrievalForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            submitButton.disabled = true;
-            submitButton.textContent = 'Retrieving...';
+    retrievalForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        submitButton.disabled = true;
+        submitButton.textContent = 'Retrieving...';
 
-            const x_coordinate = document.getElementById('x_coordinate').value;
-            const y_coordinate = document.getElementById('y_coordinate').value;
-            const access_code = document.getElementById('access_code').value;
+        const x_coordinate = document.getElementById('x_coordinate').value;
+        const y_coordinate = document.getElementById('y_coordinate').value;
+        const access_code = document.getElementById('access_code').value;
 
-            try {
-                // This makes a real request to your backend API
-                const response = await fetch('/api/retrieve', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ x_coordinate, y_coordinate, access_code })
-                });
+        try {
+            const response = await fetch('/api/retrieve', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ x_coordinate, y_coordinate, access_code })
+            });
 
-                const result = await response.json();
+            const result = await response.json();
 
-                if (response.ok) {
-                    // Success! The backend sends the 'payload' (the flag)
-                    showMessage(result.data.payload, "success");
-                } else {
-                    // The backend sends an error message
-                    showMessage(result.message, "error");
+            if (result.status === "success") {
+                let payload = result.data.payload;
+                if (Array.isArray(payload)) {
+                    payload = payload.map(
+                        row => `FLAG-${row.flag} | X=${row.x_coordinate}, Y=${row.y_coordinate}`
+                    ).join("\n");
                 }
-
-                if (result.status === "success") {
-                    let payload = result.data.payload;
-                    if (Array.isArray(payload)) {
-                        payload = payload.map(
-                            row => `FLAG-${row.flag} | X=${row.x_coordinate}, Y=${row.y_coordinate}`
-                        ).join("\n");
-                    }
-                    showMessage(payload, "success");
-                } else {
-                    showMessage(result.message, "error");
-                }
-
-
-            } catch (error) {
-                showMessage("Error connecting to server.", "error");
-            } finally {
-                submitButton.disabled = false;
-                submitButton.textContent = 'Retrieve Data';
+                showMessage(payload, "success");
+            } else {
+                // Always show Access Denied for backend errors
+                showMessage("Access Denied: Please Try Again", "error");
             }
-        });
 
-        function showMessage(message, type) {
-            responseMessage.textContent = message;
-            responseMessage.classList.remove('hidden', 'bg-green-900', 'text-green-300', 'bg-red-900', 'text-red-300');
-            const successClasses = ['bg-green-900', 'text-green-300'];
-            const errorClasses = ['bg-red-900', 'text-red-300'];
-            responseMessage.classList.add(...(type === 'success' ? successClasses : errorClasses));
-            responseMessage.classList.remove('hidden');
+        } catch (error) {
+            // Only shown when server/network is unreachable
+            showMessage("Error connecting to server.", "error");
+        } finally {
+            submitButton.disabled = false;
+            submitButton.textContent = 'Retrieve Data';
         }
-    </script>
+    });
+
+    function showMessage(message, type) {
+        responseMessage.textContent = message;
+        responseMessage.classList.remove(
+            'hidden', 'bg-green-900', 'text-green-300',
+            'bg-red-900', 'text-red-300'
+        );
+        const successClasses = ['bg-green-900', 'text-green-300'];
+        const errorClasses = ['bg-red-900', 'text-red-300'];
+        responseMessage.classList.add(...(type === 'success' ? successClasses : errorClasses));
+        responseMessage.classList.remove('hidden');
+    }
+</script>
+
 </body>
 
 </html>
