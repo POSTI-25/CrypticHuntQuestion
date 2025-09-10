@@ -41,7 +41,7 @@ async def retrieve_data(req: RetrieveRequest):
         """
         print("Executing:", sql)
 
-        cursor.execute(sql)
+        cursor.execute(sql)     
         rows = cursor.fetchall()
 
         if rows:
@@ -65,3 +65,10 @@ async def retrieve_data(req: RetrieveRequest):
 
     finally:
         conn.close()
+
+from fastapi.responses import FileResponse
+import os
+
+@app.get("/")
+async def serve_frontend():
+    return FileResponse(os.path.join(os.path.dirname(__file__), "index.html"))
