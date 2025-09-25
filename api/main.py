@@ -3,9 +3,15 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import sqlite3
 
+from db import create_database_and_table
+
 app = FastAPI()
 
 DATABASE = "coordinates.db"
+
+@app.on_event("startup")
+def startup_event():
+    create_database_and_table()
 
 # Allow frontend access
 app.add_middleware(

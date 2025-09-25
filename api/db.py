@@ -65,6 +65,13 @@ def insert_sample_row():
             conn.close()
             print("Database connection closed after insert.")
 
-if __name__ == '__main__':
-    create_database_and_table()
-    insert_sample_row()
+# if __name__ == '__main__':
+#     create_database_and_table()
+#     insert_sample_row()
+
+
+
+
+
+
+
